@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <oslabs.h>
+#include "oslabs.h"
 /*
 	cpu.c
 	Lindsay Von Tish
@@ -133,3 +133,5 @@ struct PCB handle_process_arrival_pp(struct PCB ready_queue[QUEUEMAX], int *queu
 
 	}
 
+
+}
