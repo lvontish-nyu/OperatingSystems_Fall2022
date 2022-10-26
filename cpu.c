@@ -236,8 +236,78 @@ struct PCB handle_process_completion_pp(struct PCB ready_queue[QUEUEMAX], int *q
 
 }
 
+/*
+	This method implements the logic to handle the arrival of a new process in a Shortest-Remaining-Time-Next Preemptive Scheduler. 
+	Specifically, it takes five inputs:
+		1. the ready queue (an array of PCB structs)
+		2. The number of items in the ready queue
+		3. the PCB of the currently-running process
+		4. the PCB of the newly-arriving process
+		5. the current timestamp. The method determines the process to execute next and returns its PCB.
+*/
 struct PCB handle_process_arrival_srtp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, struct PCB current_process, struct PCB new_process, int time_stamp){
-	return(NULLPCB);
+	/*
+		If there is no currently-running process (i.e., the third argument is the NULLPCB)
+			In this case, the PCB of the new process is modified so that
+				 the execution start time is set to the current timestamp,
+				 the execution end time is set to the sum of the current timestamp and the total burst time
+				 the remaining burst time is set to the total burst time.
+			then the method returns the PCB of the newly-arriving process,
+	*/
+	if(compare_PCB(current_process, NULLPCB)){
+		new_process.execution_starttime = time_stamp;
+		new_process.execution_endtime = time_stamp + new_process.total_bursttime;
+		new_process.remaining_bursttime = new_process.total_bursttime;
+		return(new_process);
+	}
+
+	/*
+		If there is a currently-running process,
+			the method compares
+				the remaining burst time of the currently-running process
+				and the total burst time of the newly-arriving process. 
+	*/
+	if(new_process.total_bursttime >= current_process.remaining_bursttime){
+	/*		
+			If the new process does not have a shorter burst time,
+				its execution start time and execution end time are set to 0
+				the remaining burst time is set to the total burst time.
+				its PCB is simply added to the ready queue
+			and the return value is the PCB of the currently running process. 
+	*/
+		new_process.execution_starttime = 0;
+		new_process.execution_endtime = 0;
+		new_process.remaining_bursttime = new_process.total_bursttime;
+		ready_queue[*queue_cnt] = new_process;
+		++*queue_cnt;
+
+		return(current_process);
+
+	}else{
+		/*
+			If the new process has a shorter burst time
+				the PCB of the new process execution start time is set to the current timestamp
+				the execution end time is set to the sum of the current timestamp and the total burst time
+				the remaining burst time is set to the total burst time.
+		*/
+		new_process.execution_starttime = time_stamp;
+		new_process.execution_endtime = time_stamp + new_process.total_bursttime;
+		new_process.remaining_bursttime = new_process.total_bursttime;
+		/*
+			the PCB of the currently-running process is added to the ready queue
+				after marking its execution start time and execution end time as 0
+				adjusting its remaining burst time.
+		*/
+		current_process.execution_endtime = 0;
+		current_process.remaining_bursttime --;
+		ready_queue[*queue_cnt] = current_process;
+		++*queue_cnt;
+
+		return(new_process);
+
+	}
+
+
 }
 
 struct PCB handle_process_completion_srtp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int timestamp){
