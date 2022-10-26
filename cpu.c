@@ -34,6 +34,9 @@ int compare_PCB(struct PCB PCB1, struct PCB PCB2);
 /* Function Declaration - print_PCB */
 int print_PCB(struct PCB p);
 
+/* Function Declaration - remove_PCB */
+struct PCB remove_PCB(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int position);
+
 /* Function Declaration - handle_process_arrival_pp */
 struct PCB handle_process_arrival_pp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, struct PCB current_process, struct PCB new_process, int timestamp);
 
@@ -59,6 +62,7 @@ int main(int argc, char *argv[]) {
 	
 
 }
+
 */
 
 
@@ -92,6 +96,17 @@ int compare_PCB(struct PCB PCB1, struct PCB PCB2){
 int print_PCB(struct PCB p){
 	printf("Contents of PCB \n [%d, %d, %d, %d, %d, %d, %d] \n", p.process_id, p.arrival_timestamp, p.total_bursttime, p.execution_starttime, p.execution_endtime, p.remaining_bursttime, p.process_priority);
 	return(0);
+}
+
+/*
+	Process to remove a PCB from the queue
+*/
+struct PCB remove_PCB(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int position){
+	--*queue_cnt;
+	for(int i = position; i < *queue_cnt - 1; i++){
+		ready_queue[i] = ready_queue[i+1];
+	}
+	ready_queue[*queue_cnt] = NULLPCB;
 }
 
 /* handle_process_arrival_pp
@@ -169,8 +184,44 @@ struct PCB handle_process_arrival_pp(struct PCB ready_queue[QUEUEMAX], int *queu
 }
 
 
+/*
+handle_process_completion_pp
+	This method implements the logic to handle the completion of execution of a process in a Priority-based Preemptive Scheduler.
+		Specifically, it takes three inputs:
+		1. the ready queue (an array of PCB structs)
+		2. The number of items in the ready queue
+		3. the current timestamp.	
+	The method determines the process to execute next and returns its PCB
+*/
 struct PCB handle_process_completion_pp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int timestamp){
-	return(NULLPCB);
+	/*
+		If the ready queue is empty, the method returns the NULLPCB - indicating that there is no process to execute.
+	*/
+	if(*queue_cnt == 0){
+		return(NULLPCB);
+	}
+	/*
+		Otherwise, the method finds the PCB of the process in the ready queue with the highest priority
+			removes this PCB from the ready queue 
+	*/
+	int max_priority = ready_queue[0].process_priority;
+	int position = 0;
+	for(int i = 1; i < *queue_cnt; i++){
+		if(ready_queue[i].process_priority < max_priority){
+			max_priority = ready_queue[i].process_priority;
+			position = i;
+		}
+	}
+	struct PCB next = ready_queue[position];
+	remove_PCB(ready_queue, queue_cnt, position);
+	//set the execution start time as the current timestamp
+	next.execution_starttime = timestamp;
+	//set the execution end time as the sum of the current timestamp and the remaining burst time.
+	next.execution_endtime = timestamp + next.remaining_bursttime;
+	print_PCB(next);
+
+	return(next);
+
 }
 
 struct PCB handle_process_arrival_srtp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, struct PCB current_process, struct PCB new_process, int time_stamp){
