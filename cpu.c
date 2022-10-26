@@ -22,7 +22,7 @@ struct PCB {
 	int remaining_bursttime;
 	int process_priority;
 }
-8?
+*/
 
 /* Global Variables */
 struct PCB NULLPCB = {.process_id = 0, .arrival_timestamp = 0, .total_bursttime = 0, .execution_starttime = 0, .execution_endtime = 0, .remaining_bursttime = 0, .process_priority = 0};
@@ -143,6 +143,8 @@ struct PCB handle_process_arrival_pp(struct PCB ready_queue[QUEUEMAX], int *queu
 		*/
 		current_process.execution_endtime = 0;
 		//current_process.remaining_bursttime
+
+		return new_process;
 
 	}
 
