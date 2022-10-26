@@ -34,6 +34,9 @@ int compare_PCB(struct PCB PCB1, struct PCB PCB2);
 /* Function Declaration - print_PCB */
 int print_PCB(struct PCB p);
 
+/* Function Declaration - print_queue */
+int print_queue(struct PCB ready_queue[QUEUEMAX], int *queue_cnt);
+
 /* Function Declaration - remove_PCB */
 struct PCB remove_PCB(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int position);
 
@@ -99,13 +102,23 @@ int print_PCB(struct PCB p){
 }
 
 /*
+	Process to print the queue
+*/
+int print_queue(struct PCB ready_queue[QUEUEMAX], int *queue_cnt){
+	for(int i = 0; i < *queue_cnt; i++){
+		print_PCB(ready_queue[i]);
+	}
+	return(0);
+}
+
+/*
 	Process to remove a PCB from the queue
 */
 struct PCB remove_PCB(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int position){
-	--*queue_cnt;
 	for(int i = position; i < *queue_cnt - 1; i++){
 		ready_queue[i] = ready_queue[i+1];
 	}
+	--*queue_cnt;
 	ready_queue[*queue_cnt] = NULLPCB;
 }
 
@@ -218,7 +231,6 @@ struct PCB handle_process_completion_pp(struct PCB ready_queue[QUEUEMAX], int *q
 	next.execution_starttime = timestamp;
 	//set the execution end time as the sum of the current timestamp and the remaining burst time.
 	next.execution_endtime = timestamp + next.remaining_bursttime;
-	print_PCB(next);
 
 	return(next);
 
