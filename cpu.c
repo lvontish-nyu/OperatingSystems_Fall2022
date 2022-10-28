@@ -403,6 +403,50 @@ struct PCB handle_process_arrival_rr(struct PCB ready_queue[QUEUEMAX], int *queu
 	}
 }
 
+/*
+handle_process_completion_rr
+	This method implements the logic to handle the completion of execution of a process in a Round-Robin Scheduler
+	it takes four inputs:
+		1. the ready queue (an array of PCB structs)
+		2. The number of items in the ready queue
+		3. the current timestamp
+		4. the time quantum.
+	The method determines the process to execute next and returns its PCB.
+*/
 struct PCB handle_process_completion_rr(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int time_stamp, int time_quantum){
-	return(NULLPCB);
+	/*
+		If the ready queue is empty, the method returns the NULLPCB, indicating that there is no process to execute next.
+	*/
+	if(*queue_cnt == 0){
+		return(NULLPCB);
+	}
+
+	/*
+		Otherwise, the method finds the PCB of the process in the ready queue with the earliest arrival time
+			and removes this PCB from the ready queue
+	*/
+	int min_arrival = ready_queue[0].arrival_timestamp;
+	int position = 0;
+	for(int i = 1; i < *queue_cnt; i++){
+		if(ready_queue[i].arrival_timestamp < min_arrival){
+			min_arrival = ready_queue[i].arrival_timestamp;
+			position = i;
+		}
+	}
+	struct PCB next = ready_queue[position];
+	remove_PCB(ready_queue, queue_cnt, position);
+	/*
+			Modifies the PCB so that
+				set the execution start time as the current timestamp
+				set the execution end time as the sum of the current timestamp and the smaller of the time quantum and the remaining burst time.
+			returns the PCB
+	*/
+	next.execution_starttime = time_stamp;
+	if(time_quantum < next.remaining_bursttime){
+			next.execution_endtime = time_stamp + time_quantum;
+		}else{
+			next.execution_endtime = time_stamp + next.remaining_bursttime;
+		}
+
+	return(next);
 }
