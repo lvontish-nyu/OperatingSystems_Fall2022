@@ -353,8 +353,54 @@ struct PCB handle_process_completion_srtp(struct PCB ready_queue[QUEUEMAX], int 
 }
 
 
+/*
+handle_process_arrival_rr
+	This method implements the logic to handle the arrival of a new process in a Round-Robin Scheduler.
+	it takes six inputs:
+		1. the ready queue (an array of PCB structs)
+		2. The number of items in the ready queue
+		3. the PCB of the currently-running process
+		4. the PCB of the newly-arriving process
+		5. the current timestamp
+		6. the time quantum.
+	The method determines the process to execute next and returns its PCB.
+*/
 struct PCB handle_process_arrival_rr(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, struct PCB current_process, struct PCB new_process, int timestamp, int time_quantum){
-	return(NULLPCB);
+	/*
+		If there is no currently-running process
+			the PCB of the new process is modified so that
+			the execution start time is set to the current timestamp
+			the execution end time is set to the sum of the current timestamp and the smaller of the time quantum and the total burst time
+			The remaining bursttime is set to the total burst time.
+		then the method returns the PCB of the newly-arriving process
+	*/
+	if(compare_PCB(current_process, NULLPCB)){
+		new_process.execution_starttime = timestamp;
+		if(time_quantum < new_process.total_bursttime){
+			new_process.execution_endtime = timestamp + time_quantum;
+		}else{
+			new_process.execution_endtime = timestamp + new_process.total_bursttime;
+		}
+		new_process.remaining_bursttime = new_process.total_bursttime;
+		return(new_process);
+	}else{
+		/*
+			If there is a currently-running process
+				the method simply adds the PCB of the newly-arriving process to the ready queue
+					its execution start time IS SET TO 0
+					The execution end time is set to 0
+					the remaining burst time is set to the total burst time.
+			the return value is the PCB of the currently running process
+		*/
+		new_process.execution_starttime = 0;
+		new_process.execution_endtime = 0;
+		new_process.remaining_bursttime = new_process.total_bursttime;
+		ready_queue[*queue_cnt] = new_process;
+		++*queue_cnt;
+
+		return(current_process);
+
+	}
 }
 
 struct PCB handle_process_completion_rr(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int time_stamp, int time_quantum){
