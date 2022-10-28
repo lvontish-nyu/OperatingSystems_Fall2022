@@ -312,8 +312,44 @@ struct PCB handle_process_arrival_srtp(struct PCB ready_queue[QUEUEMAX], int *qu
 
 }
 
+/*
+handle_process_completion_srtp
+	This method implements the logic to handle the completion of execution of a process in a Shortest-Remaining-Time Preemptive Scheduler.
+	It takes three inputs:
+		1. the ready queue (an array of PCB structs)
+		2. The number of items in the ready queue
+		3. the current timestamp
+	The method determines the process to execute next and returns its PCB
+*/
 struct PCB handle_process_completion_srtp(struct PCB ready_queue[QUEUEMAX], int *queue_cnt, int timestamp){
-	return(NULLPCB);
+	/*
+		If the ready queue is empty
+			the method returns the NULLPCB (indicating that there is no process to execute next)
+	*/
+	if(*queue_cnt == 0){
+		return(NULLPCB);
+	}
+	/*
+		Otherwise
+			the method finds the PCB of the process in the ready queue with the smallest remaining burst time
+			and removes this PCB from the ready queue
+	*/
+	int min_rburst = ready_queue[0].remaining_bursttime;
+	int position = 0;
+	for(int i = 1; i < *queue_cnt; i++){
+		if(ready_queue[i].remaining_bursttime < min_rburst){
+			min_rburst = ready_queue[i].remaining_bursttime;
+			position = i;
+		}
+	}
+	struct PCB next = ready_queue[position];
+	remove_PCB(ready_queue, queue_cnt, position);
+	//set the execution start time as the current timestamp
+	next.execution_starttime = timestamp;
+	// set the execution end time as the sum of the current timestamp and the remaining burst time
+	next.execution_endtime = timestamp + next.remaining_bursttime;
+
+	return(next);
 }
 
 
