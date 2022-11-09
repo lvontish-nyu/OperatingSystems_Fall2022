@@ -170,8 +170,30 @@ struct MEMORY_BLOCK first_fit_allocate(int request_size, struct MEMORY_BLOCK mem
 
 /* worst_fit_allocate */
 struct MEMORY_BLOCK worst_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id){
-	return(NULLBLOCK);
+	// Find largest block
+	int largest = memory_map[0].segment_size;
+	int position = 0;
+	for(int i = 1; i < *map_cnt; i++){
+		if(memory_map[i].segment_size > largest){
+			largest = memory_map[i].segment_size;
+			position = i;
+		}
+	}
+	// Is the largest spot big enough to fit the new segment?
+	if(request_size == largest){
+		// Perfect Fit
+		memory_map[position].process_id = process_id;
+		return(memory_map[position]);
+	}else if(request_size < largest){
+		split_Block(memory_map, map_cnt, position, request_size);
+		memory_map[position].process_id = process_id;
+		return(memory_map[position]);
+	}else{
+		// Otherwise, the request is larger than the largest remaining memory block
+		return(NULLBLOCK);
+	}
 }
+
 /* next_fit_allocate */
 struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id, int last_address){
 	return(NULLBLOCK);
