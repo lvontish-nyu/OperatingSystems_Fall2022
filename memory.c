@@ -155,12 +155,13 @@ struct MEMORY_BLOCK first_fit_allocate(int request_size, struct MEMORY_BLOCK mem
 			if(sizeDiff == 0){
 				// Perfect fit found!
 				memory_map[i].process_id = process_id;
+				return(memory_map[i]);
 			}else if(sizeDiff > 0){
 				// Good enough fit found!
 				split_Block(memory_map, map_cnt, i, request_size);
 				memory_map[i].process_id = process_id;
+				return(memory_map[i]);
 			}
-			return(memory_map[i]);
 		}
 	}
 	// Otherwise, no fit was found, return NULL
