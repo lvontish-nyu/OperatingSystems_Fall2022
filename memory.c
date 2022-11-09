@@ -31,6 +31,10 @@ int print_BLOCK(struct MEMORY_BLOCK b);
 int print_MAP(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt);
 /* split_BLOCK */
 int split_Block(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int position, int request_size);
+/* compare_BLOCK */
+int compare_BLOCK(struct MEMORY_BLOCK M1, struct MEMORY_BLOCK M2);
+/* merge_BLOCKS( */
+int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start_position, int end_position);
 
 /* Assignment Functions */
 /* best_fit_allocate */
@@ -83,6 +87,28 @@ int split_Block(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int positi
 
 	++*map_cnt;
 
+	return(0);
+}
+
+/* merge_BLOCKS( */
+int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start_position, int end_position){
+	// Create one block that will contain the others
+	int s = memory_map[start_position].start_address;
+	int e = memory_map[end_position].end_address;
+	int n = end_position - start_position;
+
+	struct MEMORY_BLOCK mega_BLOCK = {.start_address = s, .end_address = e, .segment_size = e - s + 1, .process_id = 0};
+	//printf("Created new mega_BLOCK!\n");
+	//print_BLOCK(mega_BLOCK);
+
+	// Place megaBlock in the map and shift additional blocks backwards
+	memory_map[start_position] = mega_BLOCK;
+	for(int i = start_position + 1; i < *map_cnt - n; i++){
+		memory_map[i] = memory_map[i + n];
+	}
+	//printf("map_cnt = %d", *map_cnt);
+	*map_cnt = *map_cnt - n;
+	//printf("map_cnt = %d", *map_cnt);
 	return(0);
 }
 
@@ -148,7 +174,35 @@ struct MEMORY_BLOCK first_fit_allocate(int request_size, struct MEMORY_BLOCK mem
 	// Find memory block
 	int sizeDiff;
 
+	for(int i = 0; i < *map_cnt; i++){/* release_memory */
+void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
+	//Find the free block in the map
+	int position = -1;
 	for(int i = 0; i < *map_cnt; i++){
+		if(compare_BLOCK(freed_block, memory_map[i])){
+			position = i;
+			break;
+		}
+	}
+
+	// Set memory block PID to 0
+	memory_map[position].process_id = 0;
+
+	//printf("Map before merge:\n");
+	//print_MAP(memory_map, map_cnt);
+
+	if(memory_map[position - 1].process_id == 0 && memory_map[position - 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position - 1, position + 1);
+	}else if(memory_map[position - 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position - 1, position);
+	}else if(memory_map[position + 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position, position + 1);
+	}
+
+	//printf("Map after merge:\n");
+	//print_MAP(memory_map, map_cnt);
+
+}
 		// Only care about free blocks w/ a PID of 0 with enough memory to fit the new block
 		if(memory_map[i].process_id == 0){
 			sizeDiff = memory_map[i].segment_size - request_size;
@@ -200,7 +254,7 @@ struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 	int sizeDiff;
 	
 	for(int i = 0; i < *map_cnt; i++){
-		if(memory_map[i].start_address >= last_address && memory_map[i].process_id == 0){
+		if(memory_map[i].start_address > last_address && memory_map[i].process_id == 0){
 			// Only care about blocks AFTER the last_address with PID of 0
 			if(memory_map[i].segment_size == request_size){
 				// Perfect fit
@@ -221,5 +275,30 @@ struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 
 /* release_memory */
 void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
-	int a = 1;
+	//Find the free block in the map
+	int position = -1;
+	for(int i = 0; i < *map_cnt; i++){
+		if(compare_BLOCK(freed_block, memory_map[i])){
+			position = i;
+			break;
+		}
+	}
+
+	// Set memory block PID to 0
+	memory_map[position].process_id = 0;
+
+	//printf("Map before merge:\n");
+	//print_MAP(memory_map, map_cnt);
+
+	if(memory_map[position - 1].process_id == 0 && memory_map[position - 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position - 1, position + 1);
+	}else if(memory_map[position - 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position - 1, position);
+	}else if(memory_map[position + 1].process_id == 0){
+		merge_BLOCKS(memory_map, map_cnt, position, position + 1);
+	}
+
+	//printf("Map after merge:\n");
+	//print_MAP(memory_map, map_cnt);
+
 }
