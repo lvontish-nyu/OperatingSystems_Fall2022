@@ -194,10 +194,31 @@ struct MEMORY_BLOCK worst_fit_allocate(int request_size, struct MEMORY_BLOCK mem
 	}
 }
 
-/* next_fit_allocate */
+//* next_fit_allocate */
 struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id, int last_address){
+	// Find the next block with enough memory
+	int sizeDiff;
+	
+	for(int i = 0; i < *map_cnt; i++){
+		if(memory_map[i].start_address > last_address && memory_map[i].process_id == 0){
+			// Only care about blocks AFTER the last_address with PID of 0
+			if(memory_map[i].segment_size == request_size){
+				// Perfect fit
+				memory_map[i].process_id = process_id;
+				return(memory_map[i]);
+			}else if(memory_map[i].segment_size > request_size){
+				// Good enough fit
+				split_Block(memory_map, map_cnt, i, request_size);
+				memory_map[i].process_id = process_id;
+				return(memory_map[i]);
+			}
+		}
+	}
+	//Otherwise, there is no fit after the last address that is big enough
 	return(NULLBLOCK);
 }
+
+
 /* release_memory */
 void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
 	int a = 1;
