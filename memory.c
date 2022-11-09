@@ -270,7 +270,7 @@ struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 	int sizeDiff;
 	
 	for(int i = 0; i < *map_cnt; i++){
-		if(memory_map[i].start_address > last_address && memory_map[i].process_id == 0){
+		if(memory_map[i].start_address >= last_address && memory_map[i].process_id == 0){
 			// Only care about blocks AFTER the last_address with PID of 0
 			if(memory_map[i].segment_size == request_size){
 				// Perfect fit
