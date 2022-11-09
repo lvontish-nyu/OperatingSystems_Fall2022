@@ -170,11 +170,11 @@ struct MEMORY_BLOCK first_fit_allocate(int request_size, struct MEMORY_BLOCK mem
 
 /* worst_fit_allocate */
 struct MEMORY_BLOCK worst_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id){
-	// Find largest block
-	int largest = memory_map[0].segment_size;
-	int position = 0;
-	for(int i = 1; i < *map_cnt; i++){
-		if(memory_map[i].segment_size > largest){
+	// Find largest block of size 0
+	int largest = -32;
+	int position = -1;
+	for(int i = 0; i < *map_cnt; i++){
+		if(memory_map[i].segment_size > largest && memory_map[i].process_id == 0){
 			largest = memory_map[i].segment_size;
 			position = i;
 		}
