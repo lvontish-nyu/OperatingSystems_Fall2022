@@ -145,8 +145,28 @@ struct MEMORY_BLOCK best_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 
 /* first_fit_allocate */
 struct MEMORY_BLOCK first_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id){
+	// Find memory block
+	int sizeDiff;
+
+	for(int i = 0; i < *map_cnt; i++){
+		// Only care about free blocks w/ a PID of 0 with enough memory to fit the new block
+		if(memory_map[i].process_id == 0){
+			sizeDiff = memory_map[i].segment_size - request_size;
+			if(sizeDiff == 0){
+				// Perfect fit found!
+				memory_map[i].process_id = process_id;
+			}else if(sizeDiff > 0){
+				// Good enough fit found!
+				split_Block(memory_map, map_cnt, i, request_size);
+				memory_map[i].process_id = process_id;
+			}
+			return(memory_map[i]);
+		}
+	}
+	// Otherwise, no fit was found, return NULL
 	return(NULLBLOCK);
 }
+
 /* worst_fit_allocate */
 struct MEMORY_BLOCK worst_fit_allocate(int request_size, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt, int process_id){
 	return(NULLBLOCK);
