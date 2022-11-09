@@ -70,13 +70,9 @@ int print_MAP(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt){
 
 int split_Block(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int position, int request_size){
 	// Shift BLOCKs after the split forward
-	//printf("Original Block\n");
-	//print_BLOCK(memory_map[position]);
-
 	for(int i = *map_cnt; i > position; i--){
 		memory_map[i] = memory_map[i -1];
 	}
-	//printf("Blocks shifted\n");
 	// Split block at position
 	struct MEMORY_BLOCK og_BLOCK = memory_map[position];
 	memory_map[position].segment_size = request_size;
@@ -85,15 +81,9 @@ int split_Block(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int positi
 	memory_map[position + 1].segment_size -= request_size;
 	memory_map[position + 1].start_address = memory_map[position].end_address + 1;
 
-	/*
-	printf("Block 1\n");
-	print_BLOCK(memory_map[position]);
-	printf("\nBlock 2\n");
-	print_BLOCK(memory_map[position + 1]);
-	*/
+	++*map_cnt;
 
 	return(0);
-
 }
 
 /* Assignment Functions */
@@ -115,7 +105,6 @@ struct MEMORY_BLOCK best_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 	for(int i = 0; i < *map_cnt; i++){
 		sizeDiff = memory_map[i].segment_size - request_size;
 		// Only care about free blocks w/ a PID of 0 with enough memory to fit the new block
-		//printf("Comparing:\n	bestDiff = %d at position %d \nsizeDiff = %d at position %d \n", bestDiff, position, sizeDiff, i);
 		if(memory_map[i].process_id == 0 && sizeDiff >= 0){
 			if(sizeDiff == 0){
 				/*
@@ -124,27 +113,20 @@ struct MEMORY_BLOCK best_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 						returns this memory block.
 					Can return first exact fit memory block
 				*/
-				//printf("Blocks are the same size\n Returning BLOCK of size %d at position %d\n", memory_map[i].segment_size, i);
 				memory_map[i].process_id = process_id;
 				return(memory_map[i]);
 			}else if(sizeDiff < bestDiff && bestDiff >= 0){
-				//printf("New BLOCK of diff size %d at position %d is better fit\n", sizeDiff, i);
 				position = i;
 				bestDiff = sizeDiff;
 			}else if(bestDiff < 0){
-				//printf("BestDiff is negative \n");
-				//printf("     New BLOCK of diff size %d at position %d is better fit\n", sizeDiff, i);
 				position = i;
 				bestDiff = sizeDiff;
 			}
 		}
 	}
 
-	//printf("Best fit found!\n SizeDiff = %d\n Size = %d\n, position = %d\n", bestDiff, memory_map[position].segment_size, position);
-
 	if(bestDiff < 0){
 		// if there is no free block of memory (in the memory map) that is at least as large as the requested size, the method returns the NULLBLOCK.
-		printf("No free block.  Returning NULL\n");
 		return(NULLBLOCK);
 	}else{
 		/*
@@ -153,19 +135,9 @@ struct MEMORY_BLOCK best_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 				the first piece allocated
 				the second piece becoming a free block in the memory map
 		*/
-		/*
-		printf("Reallocating block at position %d of size %d\n", position, memory_map[position].segment_size);
-		printf("Original Map:\n");
-		print_MAP(memory_map, map_cnt);
-		*/
 
-		split_Block(memory_map, map_cnt, request_size, position);
+		split_Block(memory_map, map_cnt, position, request_size);
 		memory_map[position].process_id = process_id;
-
-		/*
-		printf("\nNew Map\n");
-		print_MAP(memory_map, map_cnt);
-		*/
 
 	}
 }
