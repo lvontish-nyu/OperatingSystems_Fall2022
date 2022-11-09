@@ -138,7 +138,7 @@ struct MEMORY_BLOCK best_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 
 		split_Block(memory_map, map_cnt, position, request_size);
 		memory_map[position].process_id = process_id;
-
+		return(memory_map[position]);
 	}
 }
 
