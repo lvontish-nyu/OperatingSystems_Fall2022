@@ -90,6 +90,22 @@ int split_Block(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int positi
 	return(0);
 }
 
+
+/* compare_BLOCK */
+int compare_BLOCK(struct MEMORY_BLOCK M1, struct MEMORY_BLOCK M2){
+	if(M1.segment_size != M2.segment_size){
+		return(0);
+	}else if(M1.start_address != M2.start_address){
+		return(0);
+	}else if(M1.end_address != M2.end_address){
+		return(0);
+	}else if(M1.process_id != M2.process_id){
+		return(0);
+	}else{
+		return(1);
+	}
+}
+
 /* merge_BLOCKS( */
 int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start_position, int end_position){
 	// Create one block that will contain the others
