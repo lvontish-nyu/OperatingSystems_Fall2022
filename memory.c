@@ -123,7 +123,7 @@ int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start
 		memory_map[i] = memory_map[i + n];
 	}
 	//printf("map_cnt = %d", *map_cnt);
-	*map_cnt = *map_cnt - n;
+	*map_cnt = *map_cnt - n + 1;
 	//printf("map_cnt = %d", *map_cnt);
 	return(0);
 }
