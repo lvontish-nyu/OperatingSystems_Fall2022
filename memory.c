@@ -119,7 +119,7 @@ int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start
 
 	// Place megaBlock in the map and shift additional blocks backwards
 	memory_map[start_position] = mega_BLOCK;
-	for(int i = start_position + 1; i < *map_cnt + 1; i++){
+	for(int i = start_position + 1; i < *map_cnt - n; i++){
 		memory_map[i] = memory_map[i + n];
 	}
 	//printf("map_cnt = %d", *map_cnt);
@@ -306,12 +306,41 @@ void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_
 	//printf("Map before merge:\n");
 	//print_MAP(memory_map, map_cnt);
 
-	if(memory_map[position - 1].process_id == 0 && memory_map[position - 1].process_id == 0){
-		merge_BLOCKS(memory_map, map_cnt, position - 1, position + 1);
-	}else if(memory_map[position - 1].process_id == 0){
-		merge_BLOCKS(memory_map, map_cnt, position - 1, position);
-	}else if(memory_map[position + 1].process_id == 0){
+	/* release_memory */
+void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
+	//Find the free block in the map
+	int position = -1;
+	for(int i = 0; i < *map_cnt; i++){
+		if(compare_BLOCK(freed_block, memory_map[i])){
+			position = i;
+			break;
+		}
+	}
+
+	// Set memory block PID to 0
+	memory_map[position].process_id = 0;
+
+	//printf("Map before merge:\n");
+	//print_MAP(memory_map, map_cnt);
+	
+
+	if(position != 0 && position != *map_cnt){
+		if(memory_map[position - 1].process_id == 0 && memory_map[position - 1].process_id == 0){
+			//printf("Blocks on either side are free\n");
+			merge_BLOCKS(memory_map, map_cnt, position - 1, position + 1);
+		}else if(memory_map[position - 1].process_id == 0){
+			//printf("Block before is free\n");
+			merge_BLOCKS(memory_map, map_cnt, position - 1, position);
+		}else if(memory_map[position + 1].process_id == 0){
+			//printf("block after is free\n");
+			merge_BLOCKS(memory_map, map_cnt, position, position + 1);
+		}
+	}else if(position != 0 && memory_map[position + 1].process_id == 0){
+		//printf("block after is free\n");
 		merge_BLOCKS(memory_map, map_cnt, position, position + 1);
+	}else if(position != *map_cnt && memory_map[position - 1].process_id == 0){
+		//printf("Block before is free\n");
+		merge_BLOCKS(memory_map, map_cnt, position - 1, position);
 	}
 
 	//printf("Map after merge:\n");
