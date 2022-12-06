@@ -195,7 +195,7 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 				//page_faults++;
 			}
 		}
-		current_timestamp++
+		current_timestamp++;
 	}
 	return(page_faults);
 }
