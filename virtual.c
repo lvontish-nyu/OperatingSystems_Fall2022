@@ -76,12 +76,12 @@ int process_page_access_fifo(struct PTE page_table[TABLEMAX],int *table_cnt, int
 
 		fn = frame_pool[*frame_cnt - 1];
 
-		page_table[*table_cnt].frame_number = fn;
-		page_table[*table_cnt].arrival_timestamp = current_timestamp;
-		page_table[*table_cnt].last_access_timestamp = current_timestamp;
-		page_table[*table_cnt].reference_count = 1;
-		page_table[*table_cnt].is_valid = 1;
-		(*table_cnt)++;
+		page_table[*page_number].frame_number = fn;
+		page_table[*page_number].arrival_timestamp = current_timestamp;
+		page_table[*page_number].last_access_timestamp = current_timestamp;
+		page_table[*page_number].reference_count = 1;
+		page_table[*page_number].is_valid = 1;
+		
 		(*frame_cnt)--;
 		return(fn);
 	}
