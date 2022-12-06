@@ -119,11 +119,19 @@ int merge_BLOCKS(struct MEMORY_BLOCK memory_map[MAPMAX], int *map_cnt, int start
 
 	// Place megaBlock in the map and shift additional blocks backwards
 	memory_map[start_position] = mega_BLOCK;
+	/*
+	memory_map[start_position] = mega_BLOCK;
 	for(int i = start_position + 1; i < *map_cnt - n; i++){
 		memory_map[i] = memory_map[i + n];
 	}
+	*/
+	for (int i = end_position + 1; i < *map_cnt; i++) {
+        memory_map[i - end_position + start_position - 1] = memory_map[i];
+    }
 	//printf("map_cnt = %d", *map_cnt);
-	*map_cnt = *map_cnt - n;
+	//*map_cnt = *map_cnt - n;
+	//Decrease map count
+	*map_cnt -= end_position - start_position + 1;
 	//printf("map_cnt = %d", *map_cnt);
 	return(0);
 }
