@@ -112,8 +112,9 @@ int process_page_access_fifo(struct PTE page_table[TABLEMAX],int *table_cnt, int
 	// It also sets the arrival_timestamp, the last_access_timestamp and the reference_count fields of the page-table entry appropriately.
 	page_table[page_number].arrival_timestamp = current_timestamp;
 	page_table[page_number].last_access_timestamp = current_timestamp;
-	page_table[page_number].reference_count = 0;
-	(*table_cnt)++;
+	page_table[page_number].reference_count = 1;
+	page_table[page_number].is_valid = 1;
+	//(*table_cnt)++;
 	// Finally, the function returns this frame number.
 	return(fn);
 		
