@@ -195,6 +195,8 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 
 	}
 
+	return(page_faults);
+
 }
 /* process_page_access_lru */
 int process_page_access_lru(struct PTE page_table[TABLEMAX],int *table_cnt, int page_number, int frame_pool[POOLMAX],int *frame_cnt, int current_timestamp){
