@@ -148,6 +148,7 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 			// modify the last_access_timestamp and the reference_count fields of the page-table entry.
 			page_table[logical_page_number].last_access_timestamp = current_timestamp;
 			page_table[logical_page_number].reference_count++;
+			page_faults++;
 		}else{
 			// Otherwise, the page is not in memory
 			// Check for free frames (i.e., the process frame pool is not empty)
