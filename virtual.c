@@ -113,6 +113,7 @@ int process_page_access_fifo(struct PTE page_table[TABLEMAX],int *table_cnt, int
 	page_table[page_number].arrival_timestamp = current_timestamp;
 	page_table[page_number].last_access_timestamp = current_timestamp;
 	page_table[page_number].reference_count = 0;
+	(*table_cnt)++;
 	// Finally, the function returns this frame number.
 	return(fn);
 		
