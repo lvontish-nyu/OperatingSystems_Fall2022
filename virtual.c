@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 #include "oslabs.h"
 /*
 	virtual.c
@@ -99,7 +100,7 @@ int process_page_access_fifo(struct PTE page_table[TABLEMAX],int *table_cnt, int
 		}
 	}
 	// Get the frame number used by that page;
-	fn = page_table[position].frame_number
+	fn = page_table[position].frame_number;
 	// It marks that page_table entry as invalid, along with setting the frame_number, arrival_timestamp, last_access_timestamp and reference_count to -1.
 	page_table[position].is_valid = 0;
 	page_table[position].frame_number = -1;
