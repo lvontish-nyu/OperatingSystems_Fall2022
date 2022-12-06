@@ -289,23 +289,6 @@ struct MEMORY_BLOCK next_fit_allocate(int request_size, struct MEMORY_BLOCK memo
 }
 
 
-/* release_memory */
-void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
-	//Find the free block in the map
-	int position = -1;
-	for(int i = 0; i < *map_cnt; i++){
-		if(compare_BLOCK(freed_block, memory_map[i])){
-			position = i;
-			break;
-		}
-	}
-
-	// Set memory block PID to 0
-	memory_map[position].process_id = 0;
-
-	//printf("Map before merge:\n");
-	//print_MAP(memory_map, map_cnt);
-
 	/* release_memory */
 void release_memory(struct MEMORY_BLOCK freed_block, struct MEMORY_BLOCK memory_map[MAPMAX],int *map_cnt){
 	//Find the free block in the map
