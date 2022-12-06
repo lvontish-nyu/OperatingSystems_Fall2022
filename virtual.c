@@ -193,7 +193,7 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 				page_table[logical_page_number].reference_count = 1;
 				page_table[logical_page_number].is_valid = 1;
 				// Count the page fault
-				page_faults++;
+				//page_faults++;
 			}
 		}
 		current_timestamp++;
