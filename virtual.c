@@ -140,6 +140,7 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 
 	// Processing each page in the reference string
 	for(int i = 0; i < reference_cnt; i++){
+		current_timestamp++;
 		// Get logical page number of the current page
 		int logical_page_number = refrence_string[i];
 	
@@ -164,8 +165,6 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 				//Remove frame from process frame pool
 				frame_pool[frame_cnt - 1] = -1;
 				frame_cnt--;
-				// Count the page fault
-				//page_faults++;
 			} else {
 				// Otherwise, there are no free frames in the process frame pool
 				// The function selects among all the pages of the process that are currently in memory (i.e., they have valid bits as true) the page that has the smallest arrival_timestamp.
@@ -192,11 +191,9 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 				page_table[logical_page_number].last_access_timestamp = current_timestamp;
 				page_table[logical_page_number].reference_count = 1;
 				page_table[logical_page_number].is_valid = 1;
-				// Count the page fault
-				//page_faults++;
 			}
 		}
-		current_timestamp++;
+
 	}
 	return(page_faults);
 }
