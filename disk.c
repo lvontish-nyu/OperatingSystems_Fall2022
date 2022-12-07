@@ -238,7 +238,7 @@ struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int
 			same_cylinder_found = 1;
 		}else if(!same_cylinder_found){
 			// Otherwise, if a request on the same cylinder hasn't been found:
-			diff = request_queue[i].cylinder - current_request;
+			diff = request_queue[i].cylinder - current_cylinder;
 			// If the diff is negative, than the cylinder is smaller.  Compare it to the closest request on a smaller cylinder.
 			if(diff < 0){
 				// If this is closer than the previous closest request on a smaller cylinder, save it
@@ -284,7 +284,7 @@ struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int
 		if(larger_found){
 			// Pick one among these whose cylinder is closest to the current cylinder
 			nextRCB = request_queue[pL];
-			P = pL
+			P = pL;
 		}else{
 			// If there are no requests with cylinders larger than the current cylinder:
 				// Pick the request whose cylinder is closest to the current cylinder.
