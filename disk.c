@@ -153,8 +153,38 @@ struct RCB handle_request_arrival_sstf(struct RCB request_queue[QUEUEMAX],int *q
 }
 /* Handle_request_completion_sstf */
 struct RCB handle_request_completion_sstf(struct RCB request_queue[QUEUEMAX],int *queue_cnt,int current_cylinder){
-	return(NULLRCB);
+	// If the request queue is empty:
+	if(*queue_cnt == 0){
+		// return NULLRCB (indicating that there is no request to service next)
+		return(NULLRCB);
+	}
+	// Otherwise:
+	int min_AT = INT_MAX;
+	int min_DIFF = INT_MAX;
+	int position = -1;
+	int diff;
+	// Find the RCB in the request queue who's cylinder is closest to the current cylinder.
+	for(int i = 0; i < *queue_cnt; i++){
+		diff = abs(request_queue[i].cylinder - current_cylinder);
+		if(diff < min_DIFF){
+			min_DIFF = diff;
+			min_AT = request_queue[i].arrival_timestamp;
+			position = i;
+		}else if(diff == min_DIFF && request_queue[i].arrival_timestamp < min_AT){
+			//  If there are multiple requests with the closest cylinder:
+				// The method picks the request among these that has the earliest arrival_timestamp
+			min_DIFF = diff;
+			min_AT = request_queue[i].arrival_timestamp;
+			position = i;
+		}
+	}
+	struct RCB nextRCB = request_queue[position];
+	// Remove this RCB from the request queue
+	remove_RCB(request_queue, queue_cnt, position);
+	// Return the removed RCB
+	return(nextRCB);
 }
+
 /* Handle_request_arrival_look */
 struct RCB handle_request_arrival_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
 	return(NULLRCB);
