@@ -93,8 +93,8 @@ int process_page_access_fifo(struct PTE page_table[TABLEMAX],int *table_cnt, int
 	// The function selects among all the pages of the process that are currently in memory (i.e., they have valid bits as true) the page that has the smallest arrival_timestamp.
 	int min_ts = INT_MAX;
 	int position = -1;
-	for(int i = 0; i < *table_cnt; i++){
-		if(page_table[i].is_valid && page_table[i].arrival_timestamp < min_ts){
+	for(int j = 0; j < *table_cnt; j++){
+		if(page_table[j].is_valid && page_table[i].arrival_timestamp < min_ts){
 			min_ts = page_table[i].arrival_timestamp;
 			position = i;
 		}
@@ -170,10 +170,10 @@ int count_page_faults_fifo(struct PTE page_table[TABLEMAX],int table_cnt, int re
 				// The function selects among all the pages of the process that are currently in memory (i.e., they have valid bits as true) the page that has the smallest arrival_timestamp.
 				min_ts = INT_MAX;
 				position = -1;
-				for(int i = 0; i < table_cnt; i++){
-					if(page_table[i].is_valid && page_table[i].arrival_timestamp < min_ts){
-						min_ts = page_table[i].arrival_timestamp;
-						position = i;
+				for(int j = 0; j < table_cnt; j++){
+					if(page_table[j].is_valid && page_table[j].arrival_timestamp < min_ts){
+						min_ts = page_table[j].arrival_timestamp;
+						position = j;
 					}
 				}
 				// Get the frame number used by that page;
@@ -319,10 +319,10 @@ int count_page_faults_lru(struct PTE page_table[TABLEMAX],int table_cnt, int ref
 				// The function selects among all the pages of the process that are currently in memory (i.e., they have valid bits as true) the page that has the smallest last_access_timestamp.
 				min_ts = INT_MAX;
 				position = -1;
-				for(int i = 0; i < table_cnt; i++){
-					if(page_table[i].is_valid && page_table[i].last_access_timestamp < min_ts){
-						min_ts = page_table[i].last_access_timestamp;
-						position = i;
+				for(int j = 0; j < table_cnt; j++){
+					if(page_table[j].is_valid && page_table[j].last_access_timestamp < min_ts){
+						min_ts = page_table[j].last_access_timestamp;
+						position = j;
 					}
 				}
 				// Get the frame number used by that page;
@@ -457,10 +457,10 @@ int count_page_faults_lfu(struct PTE page_table[TABLEMAX],int table_cnt, int ref
 				// The function selects among all the pages of the process that are currently in memory (i.e., they have valid bits as true) the page that has the smallest last_access_timestamp.
 				min_ts = INT_MAX;
 				position = -1;
-				for(int i = 0; i < table_cnt; i++){
-					if(page_table[i].is_valid && page_table[i].reference_count < min_ts){
-						min_ts = page_table[i].reference_count;
-						position = i;
+				for(int j = 0; j < table_cnt; j++){
+					if(page_table[j].is_valid && page_table[j].reference_count < min_ts){
+						min_ts = page_table[j].reference_count;
+						position = j;
 					}
 				}
 				// Get the frame number used by that page;
