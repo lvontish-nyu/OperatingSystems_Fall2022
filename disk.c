@@ -76,7 +76,7 @@ int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position)
 /* handle_arrivals */
 struct RCB handle_arrivals(struct RCB request_queue[QUEUEMAX], int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
 	// Update arrival timestamp
-	new_request.arrival_timestamp = timestamp;	
+	//new_request.arrival_timestamp = timestamp;	
 	// If the disk is free (indicated by the third parameter being a NULLRCB):
 	if(compare_RCB(current_request, NULLRCB)){
 		// The method returns the RCB of the newly-arriving request
