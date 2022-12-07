@@ -430,6 +430,7 @@ int count_page_faults_lfu(struct PTE page_table[TABLEMAX],int table_cnt, int ref
 	// # Page Faults encountered
 	int page_faults = 0;
 	int fn;
+	int min_at = INT_MAX;
 	int min_ts = INT_MAX;
 	int position = -1;
 
