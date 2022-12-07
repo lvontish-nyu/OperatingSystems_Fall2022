@@ -27,6 +27,8 @@ struct RCB NULLRCB = {.request_id = 0, .arrival_timestamp = 0, .cylinder = 0, .a
 int compare_RCB(struct RCB rcb1, struct RCB rcb2);
 /* remove_RCB */
 int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position);
+/* handle_arrivals */
+struct RCB handle_arrivals(struct RCB request_queue[QUEUEMAX], int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp);
 
 /* Assignment Function Declarations*/
 /* handle_request_arrival_fcfs */
@@ -69,6 +71,21 @@ int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position)
 	(*queue_cnt)--;
 	request_queue[*queue_cnt] = NULLRCB;
 	return(1);
+}
+
+/* handle_arrivals */
+struct RCB handle_arrivals(struct RCB request_queue[QUEUEMAX], int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
+	// If the disk is free (indicated by the third parameter being a NULLRCB):
+	if(compare_RCB(current_request, NULLRCB)){
+		// The method returns the RCB of the newly-arriving request
+		return(new_request);
+	}
+	// Otherwise
+	// Add new request to the request queue
+	request_queue[*queue_cnt] = new_request;
+	(*queue_cnt)++;
+	// Return the RCB of the currently-serviced request
+	return(current_request);
 }
 
 /* Assignment Functions */
@@ -187,7 +204,17 @@ struct RCB handle_request_completion_sstf(struct RCB request_queue[QUEUEMAX],int
 
 /* Handle_request_arrival_look */
 struct RCB handle_request_arrival_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
-	return(NULLRCB);
+	// If the disk is free (indicated by the third parameter being a NULLRCB):
+	if(compare_RCB(current_request, NULLRCB)){
+		// The method returns the RCB of the newly-arriving request
+		return(new_request);
+	}
+	// Otherwise
+	// Add new request to the request queue
+	request_queue[*queue_cnt] = new_request;
+	(*queue_cnt)++;
+	// Return the RCB of the currently-serviced request
+	return(current_request);
 }
 /* Handle_request_completion_look */
 struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, int current_cylinder, int scan_direction){
