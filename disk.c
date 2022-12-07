@@ -23,7 +23,10 @@ struct RCB {
 struct RCB NULLRCB = {.request_id = 0, .arrival_timestamp = 0, .cylinder = 0, .address = 0, .process_id= 0};
 
 /* My Function Declarations */
+/* compare_RCB */
 int compare_RCB(struct RCB rcb1, struct RCB rcb2);
+/* remove_RCB */
+int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position);
 
 /* Assignment Function Declarations*/
 /* handle_request_arrival_fcfs */
@@ -41,6 +44,7 @@ struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int
 
 
 /* My Functions */
+/* compare_RCB */
 int compare_RCB(struct RCB rcb1, struct RCB rcb2){
 	if(rcb1.request_id != rcb2.request_id){
 		return(0);
@@ -55,6 +59,16 @@ int compare_RCB(struct RCB rcb1, struct RCB rcb2){
 	}else{
 		return(1);
 	}
+}
+
+/* remove_RCB */
+int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position){
+	for(int i = position; i < *queue_cnt - 2; i++){
+		request_queue[i] = request_queue[i + 1];
+	}
+	(*queue_cnt)--;
+	request_queue[*queue_cnt] = NULLRCB;
+	return(1);
 }
 
 /* Assignment Functions */
@@ -81,10 +95,38 @@ struct RCB handle_request_arrival_fcfs(struct RCB request_queue[QUEUEMAX], int *
 	// Return the RCB of the currently-serviced request
 	return(current_request);
 }
+
 /* handle_request_completion_fcfs */
+/*
+	This method implements the logic to handle the completion of servicing an IO request in a First-Come-First-Served Scheduler. 
+	It takes two inputs:
+		1. the request queue (an array of RCB structs).
+		2. The number of items in the request queue
+	The method determines the request to service next and returns its RCB.
+*/
 struct RCB handle_request_completion_fcfs(struct RCB request_queue[QUEUEMAX],int *queue_cnt){
-	return(NULLRCB);
+	// If the request queue is empty:
+	if(*queue_cnt == 0){
+		// return NULLRCB (indicating that there is no request to service next)
+		return(NULLRCB);
+	}
+	// Otherwise:
+	// Find the RCB in the request queue that has the earliest arrival time
+	int min_AT = INTMAX;
+	int position = -1;
+	for(int i = 0; i < queue_cnt; i++){
+		if(request_queue[i].arrival_timestamp < min_AT){
+			min_AT = request_queue[i].arrival_timestamp;
+			position = i;
+		}
+	}
+	struct RCB nextRCB = request_queue[position];
+	// Remove this RCB from the request queue
+	remove_RCB(request_queue, *queue_cnt, position);
+	// Return the removed RCB
+	return(nextRCB);
 }
+
 /* handle_request_arrival_sst */
 struct RCB handle_request_arrival_sstf(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
 	return(NULLRCB);
