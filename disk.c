@@ -103,7 +103,7 @@ struct RCB handle_arrivals(struct RCB request_queue[QUEUEMAX], int *queue_cnt, s
 */
 struct RCB handle_request_arrival_fcfs(struct RCB request_queue[QUEUEMAX], int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
 	// Uses handle_arrivals function to avoid duplicate code
-	handle_arrivals(request_queue, queue_cnt, current_request, new_request, timestamp);
+	return(handle_arrivals(request_queue, queue_cnt, current_request, new_request, timestamp));
 }
 
 /* handle_request_completion_fcfs */
