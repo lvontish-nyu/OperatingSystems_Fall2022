@@ -187,11 +187,126 @@ struct RCB handle_request_completion_sstf(struct RCB request_queue[QUEUEMAX],int
 }
 
 /* Handle_request_arrival_look */
+/*
+	This method implements the logic to handle the completion of servicing an IO request in a Shortest-Seek-Time-First Scheduler.
+	Takes three inputs:
+		1. the request queue (an array of RCB structs)
+		2. The number of items in the request queue
+		3. the current cylinder.
+	The method determines the request to service next and returns its RCB.
+*/
 struct RCB handle_request_arrival_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
 	// Uses handle_arrivals function to avoid duplicate code
 	return(handle_arrivals(request_queue, queue_cnt, current_request, new_request, timestamp));
 }
+
 /* Handle_request_completion_look */
+/*
+	This method implements the logic to handle the completion of servicing an IO request in a LOOK Scheduler.
+	It takes four input parameters:
+		1. the request queue (an array of RCB structs),
+		2. The number of items in the request queue
+		3. the current cylinder
+		4. the scan direction.
+	The method determines the request to service next and returns its RCB.
+*/
 struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, int current_cylinder, int scan_direction){
-	return(NULLRCB);
+	// If the request queue is empty:
+	if(*queue_cnt == 0){
+		// return NULLRCB (indicating that there is no request to service next)
+		return(NULLRCB);
+	}
+	// Otherwise - choose next request to service from queue
+	int min_AT = INT_MAX;
+	int position = -1;
+	int same_cylinder_found = 0;
+
+	int min_DIFF_smaller = INT_MAX * -1;
+	int min_DIFF_larger = INT_MAX;
+	int pS = -1;
+	int pL = -1;
+	int min_AT_S = INT_MAX;
+	int min_AT_L = INT_MAX;
+	int diff;
+	int larger_found = 0;
+	int smaller_found = 0;
+	for(int i = 0; i < *queue_cnt; i++){
+		// If there are requests in the queue with the same cylinder as the current cylinder, pick the one among these requests with the earliest arrival time.
+		if(request_queue[i].cylinder == current_cylinder && request_queue[i].arrival_timestamp < min_AT){
+			min_AT = request_queue[i].arrival_timestamp;
+			position = i;
+			same_cylinder_found = 1;
+		}else if(!same_cylinder_found){
+			// Otherwise, if a request on the same cylinder hasn't been found:
+			diff = request_queue[i].cylinder - current_request;
+			// If the diff is negative, than the cylinder is smaller.  Compare it to the closest request on a smaller cylinder.
+			if(diff < 0){
+				// If this is closer than the previous closest request on a smaller cylinder, save it
+				if(diff > min_DIFF_smaller){
+					min_DIFF_smaller = diff;
+					min_AT_S = request_queue[i].arrival_timestamp;
+					pS = i;
+					smaller_found = 1;
+				}else if(diff == min_DIFF_smaller && request_queue[i].arrival_timestamp < min_AT_S){
+					//  If there are multiple requests with the closest cylinder, then pick the request among these that has the earliest arrival_timestamp
+					min_DIFF_smaller = diff;
+					min_AT_S = request_queue[i].arrival_timestamp;
+					pS = i;
+					smaller_found = 1;
+				}
+			}else if(diff > 0){
+				// If the diff is positive, then the cylinder is larger.  Compare it to the closest request on a smaller cylinder
+				if(diff < min_DIFF_larger){
+					// If this is closer than the previous closest request on a larger cylinder, save it
+					min_DIFF_larger = diff;
+					min_AT_L = request_queue[i].arrival_timestamp;
+					pL = i;
+					larger_found = 1;
+				}else if(diff == min_DIFF_larger && request_queue[i].arrival_timestamp < min_AT_L){
+					// If there are multiple requests with the closest cylinder, then pick the request among these that has the earliest arrival_timestamp
+					min_DIFF_larger = diff;
+					min_AT_L = request_queue[i].arrival_timestamp;
+					pL = i;
+					larger_found = 1;
+				}
+			}
+		}
+	}
+	// If there are requests in the queue with the same cylinder as the current cylinder, pick the one with the earliest arrival_timestamp
+	struct RCB nextRCB = NULLRCB;
+	int P = 0;
+	if(same_cylinder_found){
+		nextRCB = request_queue[position];
+		P = position;
+	} else if(scan_direction){
+		// If the scan direction is 1 
+		// If there are requests with cylinders larger than the current cylinder: 
+		if(larger_found){
+			// Pick one among these whose cylinder is closest to the current cylinder
+			nextRCB = request_queue[pL];
+			P = pL
+		}else{
+			// If there are no requests with cylinders larger than the current cylinder:
+				// Pick the request whose cylinder is closest to the current cylinder.
+			nextRCB = request_queue[pS];
+			P = pS;
+		}
+	}else{
+		// Otherwise, if the scan direction is 0:
+		// If there are requests with cylinders smaller than the current cylinder:
+		if(smaller_found){
+			// Pick the one among these whose cylinder is closest to the current cylinder
+			nextRCB = request_queue[pS];
+			P = pS;
+		}else{
+			// If there are requests with cylinders larger than the current cylinder:
+				// Pick the request whose cylinder is closest to the current cylinder.
+			nextRCB = request_queue[pL];
+			P = pL;
+		}
+	}
+	// Remove this RCB from the request queue
+	remove_RCB(request_queue, queue_cnt, P);
+	// Return the removed RCB
+	return(nextRCB);
 }
