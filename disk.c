@@ -148,17 +148,8 @@ struct RCB handle_request_completion_fcfs(struct RCB request_queue[QUEUEMAX],int
 		5. the current timestamp.
 */
 struct RCB handle_request_arrival_sstf(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
-	// If the disk is free (indicated by the third parameter being NULLRCB):
-	if(compare_RCB(current_request, NULLRCB)){
-		// Return the RCB of the newly-arriving request
-		return(new_request);
-	}
-	// Otherwise:
-	// add the newly-arriving request to the request queue
-	request_queue[*queue_cnt] = new_request;
-	(*queue_cnt)++;
-	// Return the RCB of the currently-serviced request
-	return(current_request);
+	// Uses handle_arrivals function to avoid duplicate code
+	return(handle_arrivals(request_queue, queue_cnt, current_request, new_request, timestamp));
 
 }
 /* Handle_request_completion_sstf */
@@ -197,17 +188,8 @@ struct RCB handle_request_completion_sstf(struct RCB request_queue[QUEUEMAX],int
 
 /* Handle_request_arrival_look */
 struct RCB handle_request_arrival_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
-	// If the disk is free (indicated by the third parameter being a NULLRCB):
-	if(compare_RCB(current_request, NULLRCB)){
-		// The method returns the RCB of the newly-arriving request
-		return(new_request);
-	}
-	// Otherwise
-	// Add new request to the request queue
-	request_queue[*queue_cnt] = new_request;
-	(*queue_cnt)++;
-	// Return the RCB of the currently-serviced request
-	return(current_request);
+	// Uses handle_arrivals function to avoid duplicate code
+	return(handle_arrivals(request_queue, queue_cnt, current_request, new_request, timestamp));
 }
 /* Handle_request_completion_look */
 struct RCB handle_request_completion_look(struct RCB request_queue[QUEUEMAX],int *queue_cnt, int current_cylinder, int scan_direction){
