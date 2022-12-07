@@ -20,7 +20,7 @@ struct RCB {
 	int process_id;
 }
 /* Global Variables */
-struct RCB NULLRCB = {.request_id = 0, .arrival_timestamp = 0, .cylinder = 0, .address = 0, process_id= 0};
+struct RCB NULLRCB = {.request_id = 0, .arrival_timestamp = 0, .cylinder = 0, .address = 0, .process_id= 0};
 
 /* My Function Declarations */
 int compare_RCB(struct RCB rcb1, struct RCB rcb2);
@@ -77,7 +77,7 @@ struct RCB handle_request_arrival_fcfs(struct RCB request_queue[QUEUEMAX], int *
 	// Otherwise
 	// Add new request to the request queue
 	request_queue[*queue_cnt] = new_request;
-	(*request_queue)++;
+	(*request_cnt)++;
 	// Return the RCB of the currently-serviced request
 	return(current_request);
 }
