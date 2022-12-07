@@ -128,8 +128,28 @@ struct RCB handle_request_completion_fcfs(struct RCB request_queue[QUEUEMAX],int
 }
 
 /* handle_request_arrival_sst */
+/*
+	This method implements the logic to handle the arrival of a new IO request in a Shortest-Seek-First (also known as Shortest-Seek-Time-First) Scheduler.
+	Takes five inputs:
+		1. the request queue (an array of RCB structs)
+		2. The number of items in the request queue
+		3. the RCB of the currently-serviced request
+		4. the RCB of the newly-arriving request
+		5. the current timestamp.
+*/
 struct RCB handle_request_arrival_sstf(struct RCB request_queue[QUEUEMAX],int *queue_cnt, struct RCB current_request, struct RCB new_request, int timestamp){
-	return(NULLRCB);
+	// If the disk is free (indicated by the third parameter being NULLRCB):
+	if(compare_RCB(current_request, NULLRCB)){
+		// Return the RCB of the newly-arriving request
+		return(new_request);
+	}
+	// Otherwise:
+	// add the newly-arriving request to the request queue
+	request_queue[*queue_cnt] = new_request;
+	(*queue_cnt)++;
+	// Return the RCB of the currently-serviced request
+	return(current_request);
+
 }
 /* Handle_request_completion_sstf */
 struct RCB handle_request_completion_sstf(struct RCB request_queue[QUEUEMAX],int *queue_cnt,int current_cylinder){
