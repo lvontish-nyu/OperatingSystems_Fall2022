@@ -63,7 +63,7 @@ int compare_RCB(struct RCB rcb1, struct RCB rcb2){
 
 /* remove_RCB */
 int remove_RCB(struct RCB request_queue[QUEUEMAX], int *queue_cnt, int position){
-	for(int i = position; i < *queue_cnt - 2; i++){
+	for(int i = position; i < *queue_cnt - 1; i++){
 		request_queue[i] = request_queue[i + 1];
 	}
 	(*queue_cnt)--;
