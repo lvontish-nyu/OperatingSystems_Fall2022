@@ -112,9 +112,9 @@ struct RCB handle_request_completion_fcfs(struct RCB request_queue[QUEUEMAX],int
 	}
 	// Otherwise:
 	// Find the RCB in the request queue that has the earliest arrival time
-	int min_AT = INTMAX;
+	int min_AT = INT_MAX;
 	int position = -1;
-	for(int i = 0; i < queue_cnt; i++){
+	for(int i = 0; i < *queue_cnt; i++){
 		if(request_queue[i].arrival_timestamp < min_AT){
 			min_AT = request_queue[i].arrival_timestamp;
 			position = i;
@@ -122,7 +122,7 @@ struct RCB handle_request_completion_fcfs(struct RCB request_queue[QUEUEMAX],int
 	}
 	struct RCB nextRCB = request_queue[position];
 	// Remove this RCB from the request queue
-	remove_RCB(request_queue, *queue_cnt, position);
+	remove_RCB(request_queue, queue_cnt, position);
 	// Return the removed RCB
 	return(nextRCB);
 }
