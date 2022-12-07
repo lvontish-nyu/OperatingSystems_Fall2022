@@ -77,7 +77,7 @@ struct RCB handle_request_arrival_fcfs(struct RCB request_queue[QUEUEMAX], int *
 	// Otherwise
 	// Add new request to the request queue
 	request_queue[*queue_cnt] = new_request;
-	(*request_cnt)++;
+	(*queue_cnt)++;
 	// Return the RCB of the currently-serviced request
 	return(current_request);
 }
